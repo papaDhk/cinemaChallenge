@@ -2,13 +2,14 @@ services:
   api:
     image: lodgify/movies-api:3
     ports:
-      - "7172:80"
+      - "7172:8080"
       - "7443:443"
     environment:      
       - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=https://+:443;http://+:80
+      - ASPNETCORE_URLS=https://443+;http://+:8080
       - ASPNETCORE_Kestrel__Certificates__Default__Password=password
       - ASPNETCORE_Kestrel__Certificates__Default__Path=/app/aspnetapp.pfx
+      - FailurePercentage=0
   cache:
     image: "redis"
     restart: unless-stopped
