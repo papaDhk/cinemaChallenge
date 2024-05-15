@@ -1,6 +1,6 @@
 services:
   api:
-    image: lodgify/movies-api:3
+    image: lodgify/movies-api:4
     ports:
       - "7172:8080"
       - "7443:443"
