@@ -1,0 +1,63 @@
+syntax = "proto3";
+import "google/protobuf/any.proto";
+
+option csharp_namespace = "ProtoDefinitions";
+
+package movies;
+
+// The greeting service definition.
+service MoviesApi {
+  // Sends the show by id
+  rpc GetById (IdRequest) returns (responseModel);
+  // Search in the title and fullTitle of the shows
+  rpc Search (SearchRequest) returns (responseModel);
+  // Get all the shows in the db
+  rpc GetAll (Empty) returns (responseModel);
+
+}
+
+message Empty {
+
+}
+
+// The request message containing the id of the show.
+message IdRequest {
+  string Id = 1;
+}
+
+// The request message containing the search text for the show.
+message SearchRequest {
+  string text = 1;
+}
+
+
+// Exception model
+message moviesApiException {
+  string Message = 1;
+  int32 StatusCode = 2;
+}
+
+// Response model
+message responseModel {
+  bool success = 1;
+  google.protobuf.Any data  = 2;
+  repeated moviesApiException exceptions = 3;
+}
+
+// Response model for a show
+message showResponse {
+  string id  = 1;
+  string rank  = 2;
+  string title  = 3;
+  string fullTitle  = 4;
+  string year  = 5;
+  string image  = 6;
+  string crew  = 7;
+  string imDbRating  = 8;
+  string imDbRatingCount  = 9;
+}
+
+// Response model for a list of shows
+message showListResponse {
+  repeated showResponse shows = 1;
+}
