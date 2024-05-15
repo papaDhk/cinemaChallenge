@@ -1,5 +1,6 @@
 ﻿using System.Net.Http;
 using System.Threading.Tasks;
+using Grpc.Core;
 using Grpc.Net.Client;
 using ProtoDefinitions;
 
@@ -11,14 +12,19 @@ namespace ApiApplication
         {
             var httpHandler = new HttpClientHandler
             {
-                ServerCertificateCustomValidationCallback =
-                    HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
+                ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator,
             };
+            var credentials = CallCredentials.FromInterceptor((context, metadata) =>
+            {
+                metadata.Add("X-Apikey", "68e5fbda-9ec9-4858-97b2-4a8349764c63");
+                return Task.CompletedTask;
+            });
 
             var channel =
                 GrpcChannel.ForAddress("https://localhost:7443", new GrpcChannelOptions()
                 {
-                    HttpHandler = httpHandler
+                    HttpHandler = httpHandler,
+                    Credentials = ChannelCredentials.Create(new SslCredentials(), credentials)
                 });
             var client = new MoviesApi.MoviesApiClient(channel);
 
