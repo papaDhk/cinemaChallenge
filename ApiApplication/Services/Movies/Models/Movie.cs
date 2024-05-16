@@ -2,9 +2,9 @@ using System;
 
 namespace ApiApplication.Services.Movies
 {
-    public class Movies
+    public class Movie
     {
-        public string ImDbId { get; set; }
+        public string ImdbId { get; set; }
         public string Rank { get; set; }
         public string Title { get; set; }
         public string FullTitle { get; set; }

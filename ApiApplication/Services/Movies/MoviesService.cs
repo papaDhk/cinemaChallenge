@@ -24,7 +24,7 @@ namespace ApiApplication.Services.Movies
             _logger = logger;
         }
 
-        public async Task<IReadOnlyCollection<Movies>> GetAllMoviesAsync()
+        public async Task<IReadOnlyCollection<Movie>> GetAllMoviesAsync(CancellationToken cancellationToken)
         {
             var movies = await ExecuteAndCacheAsync(async () => {
                 var responses = await _moviesApiClient.GetAllAsync(new Empty());
@@ -35,9 +35,9 @@ namespace ApiApplication.Services.Movies
             return movies;
         }
         
-        private async Task<IReadOnlyCollection<Movies>> ExecuteAndCacheAsync(Func<Task<IEnumerable<Movies>>> operation, string cacheKey)
+        private async Task<IReadOnlyCollection<Movie>> ExecuteAndCacheAsync(Func<Task<IEnumerable<Movie>>> operation, string cacheKey)
         {
-            IEnumerable<Movies> movies = new List<Movies>();
+            IEnumerable<Movie> movies = new List<Movie>();
             try
             {
                 movies = await operation();
@@ -48,14 +48,14 @@ namespace ApiApplication.Services.Movies
             {
                 var cache = await _distributedCache.GetStringAsync(cacheKey);
                 if (cache != null)
-                    movies = JsonSerializer.Deserialize<IEnumerable<Movies>>(cache);
+                    movies = JsonSerializer.Deserialize<IEnumerable<Movie>>(cache);
 
                 _logger.LogError("Not able to have a successful response from movies API", ex);
             }
             return movies.ToList();
         }
         
-        public async Task<IReadOnlyCollection<Movies>> SearchMoviesAsync(string search)
+        public async Task<IReadOnlyCollection<Movie>> SearchMoviesAsync(string search, CancellationToken cancellationToken)
         {
             return await ExecuteAndCacheAsync(async () => {
                 var responses = await _moviesApiClient.SearchAsync(new SearchRequest{Text = search});
@@ -65,7 +65,7 @@ namespace ApiApplication.Services.Movies
 
         }
 
-        public async Task<Movies> GetMovieByIdAsync(string id)
+        public async Task<Movie> GetMovieByIdAsync(string id, CancellationToken cancellationToken)
         {
             var movies= await ExecuteAndCacheAsync(async () => {
                 var responses = await _moviesApiClient.GetByIdAsync(new IdRequest{Id = id});
@@ -75,13 +75,13 @@ namespace ApiApplication.Services.Movies
             return movies.FirstOrDefault();
         }
 
-        private static Movies ToMoviesDto(showResponse showResponse)
+        private static Movie ToMoviesDto(showResponse showResponse)
         {
             return showResponse is null
                 ? null
-                : new Movies
+                : new Movie
                 {
-                    ImDbId = showResponse.Id,
+                    ImdbId = showResponse.Id,
                     Stars = showResponse.Crew,
                     FullTitle = showResponse.FullTitle,
                     Title = showResponse.Title,

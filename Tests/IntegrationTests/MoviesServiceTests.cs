@@ -21,7 +21,7 @@ public class MoviesServiceTests : IClassFixture<TestFixture>
 
         var movieService = _testFixture.ServiceProvider.GetRequiredService<IMoviesService>();
         
-        var movies = await movieService.GetAllMoviesAsync();
+        var movies = await movieService.GetAllMoviesAsync(CancellationToken.None);
 
         movies.Should().NotBeNull();
     }
@@ -33,7 +33,7 @@ public class MoviesServiceTests : IClassFixture<TestFixture>
 
         var movieService = _testFixture.ServiceProvider.GetRequiredService<IMoviesService>();
         
-        var movie = await movieService.GetMovieByIdAsync("tt0111161");
+        var movie = await movieService.GetMovieByIdAsync("tt0111161",CancellationToken.None);
 
         movie.Should().NotBeNull();
     }
@@ -45,7 +45,7 @@ public class MoviesServiceTests : IClassFixture<TestFixture>
 
         var movieService = _testFixture.ServiceProvider.GetRequiredService<IMoviesService>();
         
-        var movie = await movieService.GetMovieByIdAsync("notExistingMovieId");
+        var movie = await movieService.GetMovieByIdAsync("notExistingMovieId", CancellationToken.None);
 
         movie.Should().BeNull();
     }
