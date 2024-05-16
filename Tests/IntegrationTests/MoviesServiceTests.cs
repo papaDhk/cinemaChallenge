@@ -1,4 +1,4 @@
-using ApiApplication.Services;
+using ApiApplication.Services.Movies;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Tests.IntegrationTests;

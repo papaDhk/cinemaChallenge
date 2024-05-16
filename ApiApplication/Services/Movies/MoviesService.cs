@@ -1,17 +1,15 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using ApiApplication.Dto;
 using Grpc.Core;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
 using ProtoDefinitions;
 
-namespace ApiApplication.Services
+namespace ApiApplication.Services.Movies
 {
     public class MoviesService: IMoviesService
     {

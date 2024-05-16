@@ -1,6 +1,6 @@
 using System;
 
-namespace ApiApplication.Dto
+namespace ApiApplication.Services.Movies
 {
     public class Movies
     {
