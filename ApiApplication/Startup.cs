@@ -23,7 +23,7 @@ namespace ApiApplication
             Configuration = configuration;
         }
 
-        public IConfiguration Configuration { get; }
+        private IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -33,7 +33,7 @@ namespace ApiApplication
             ConfigureCustomsService(services);
         }
 
-        public static void ConfigureCustomsService(IServiceCollection services)
+        public void ConfigureCustomsService(IServiceCollection services)
         {
             services.AddTransient<IShowtimesRepository, ShowtimesRepository>();
             services.AddTransient<ITicketsRepository, TicketsRepository>();
@@ -66,6 +66,12 @@ namespace ApiApplication
                     metadata.Add("X-Apikey", "68e5fbda-9ec9-4858-97b2-4a8349764c63");
                     return Task.CompletedTask;
                 });
+            
+            services.AddStackExchangeRedisCache(options =>
+            {
+                options.Configuration = Configuration.GetConnectionString("Redis");
+                options.InstanceName = "CachingInstance1";
+            });
         }
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

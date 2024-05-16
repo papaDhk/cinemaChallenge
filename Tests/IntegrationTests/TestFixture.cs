@@ -1,3 +1,5 @@
+using Microsoft.Extensions.Configuration;
+
 namespace Tests.IntegrationTests;
 
 using ApiApplication;
@@ -13,8 +15,12 @@ public class TestFixture : DockerComposeTestBase
     public ServiceProvider ServiceProvider { get; set; }
     public TestFixture()
     {
+        var configurationBuilder = new ConfigurationBuilder()
+            .AddJsonFile("IntegrationTests/appsettings.json");
+        IConfiguration configuration = configurationBuilder.Build();
+        
         var serviceCollection = new ServiceCollection();
-        Startup.ConfigureCustomsService(serviceCollection);
+        new Startup(configuration).ConfigureCustomsService(serviceCollection);
         ServiceProvider = serviceCollection.BuildServiceProvider();
     }
 
