@@ -8,10 +8,9 @@ namespace ApiApplication.Database
 {
     public class SampleData
     {
-        public static void Initialize(IApplicationBuilder app)
+        public static void Initialize(IServiceProvider serviceProvider)
         {
-            using var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope();
-            var context = serviceScope.ServiceProvider.GetService<CinemaContext>();
+            var context = serviceProvider.GetService<CinemaContext>();
             context.Database.EnsureCreated();
             
 

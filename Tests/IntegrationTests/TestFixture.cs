@@ -1,3 +1,4 @@
+using ApiApplication.Database;
 using Microsoft.Extensions.Configuration;
 
 namespace Tests.IntegrationTests;
@@ -22,6 +23,7 @@ public class TestFixture : DockerComposeTestBase
         var serviceCollection = new ServiceCollection();
         new Startup(configuration).ConfigureCustomsService(serviceCollection);
         ServiceProvider = serviceCollection.BuildServiceProvider();
+        SampleData.Initialize(ServiceProvider);
     }
 
     protected override ICompositeService Build()

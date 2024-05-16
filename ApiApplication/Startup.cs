@@ -4,8 +4,9 @@ using System.Threading.Tasks;
 using ApiApplication.Database;
 using ApiApplication.Database.Repositories;
 using ApiApplication.Database.Repositories.Abstractions;
-using ApiApplication.Services;
+using ApiApplication.Services.Auditorium;
 using ApiApplication.Services.Movies;
+using ApiApplication.Services.Showtimes;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -39,7 +40,10 @@ namespace ApiApplication
             services.AddTransient<IShowtimesRepository, ShowtimesRepository>();
             services.AddTransient<ITicketsRepository, TicketsRepository>();
             services.AddTransient<IAuditoriumsRepository, AuditoriumsRepository>();
-            services.AddScoped<IMoviesService, MoviesService>();
+            services.AddTransient<IMoviesService, MoviesService>();
+            services.AddTransient<IShowtimesService, ShowtimeService>();
+            services.AddTransient<IAuditoriumService, AuditoriumService>();
+
 
             services.AddDbContext<CinemaContext>(options =>
             {
@@ -92,8 +96,8 @@ namespace ApiApplication
             {
                 endpoints.MapControllers();
             });
-
-            SampleData.Initialize(app);
+            using var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope();
+            SampleData.Initialize(serviceScope.ServiceProvider);
         }      
     }
 }
