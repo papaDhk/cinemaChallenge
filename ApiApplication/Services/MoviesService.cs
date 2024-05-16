@@ -28,11 +28,13 @@ namespace ApiApplication.Services
 
         public async Task<IReadOnlyCollection<Movies>> GetAllMoviesAsync()
         {
-            return await ExecuteAndCacheAsync(async () => {
+            var movies = await ExecuteAndCacheAsync(async () => {
                 var responses = await _moviesApiClient.GetAllAsync(new Empty());
                 responses.Data.TryUnpack<showListResponse>(out var data);
                 return data.Shows.Select(ToMoviesDto).ToList();
             }, nameof(GetAllMoviesAsync));
+
+            return movies;
         }
         
         private async Task<IReadOnlyCollection<Movies>> ExecuteAndCacheAsync(Func<Task<IEnumerable<Movies>>> operation, string cacheKey)
@@ -57,19 +59,25 @@ namespace ApiApplication.Services
         
         public async Task<IReadOnlyCollection<Movies>> SearchMoviesAsync(string search)
         {
-            var responses = await _moviesApiClient.SearchAsync(new SearchRequest{Text = search});
-            responses.Data.TryUnpack<showListResponse>(out var data);
-            return data.Shows.Select(ToMoviesDto).ToList();
+            return await ExecuteAndCacheAsync(async () => {
+                var responses = await _moviesApiClient.SearchAsync(new SearchRequest{Text = search});
+                responses.Data.TryUnpack<showListResponse>(out var data);
+                return data.Shows.Select(ToMoviesDto).ToList();
+            }, nameof(SearchMoviesAsync));
+
         }
 
         public async Task<Movies> GetMovieByIdAsync(string id)
         {
-            var response = await _moviesApiClient.GetByIdAsync(new IdRequest{Id = id});
-            response.Data.TryUnpack<showListResponse>(out var data);
-            return ToMoviesDto(data.Shows.FirstOrDefault());
+            var movies= await ExecuteAndCacheAsync(async () => {
+                var responses = await _moviesApiClient.GetByIdAsync(new IdRequest{Id = id});
+                responses.Data.TryUnpack<showResponse>(out var data);
+                return new[] { ToMoviesDto(data) };
+            }, nameof(GetMovieByIdAsync));
+            return movies.FirstOrDefault();
         }
 
-        private Movies ToMoviesDto(showResponse showResponse)
+        private static Movies ToMoviesDto(showResponse showResponse)
         {
             return showResponse is null
                 ? null

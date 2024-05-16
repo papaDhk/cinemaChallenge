@@ -25,4 +25,28 @@ public class MoviesServiceTests : IClassFixture<TestFixture>
 
         movies.Should().NotBeNull();
     }
+    
+    [Fact]
+    public async Task GetMovieByIdTest()
+    {
+        await Task.Delay(10000);
+
+        var movieService = _testFixture.ServiceProvider.GetRequiredService<IMoviesService>();
+        
+        var movie = await movieService.GetMovieByIdAsync("tt0111161");
+
+        movie.Should().NotBeNull();
+    }
+    
+    [Fact]
+    public async Task GetMovieByIdNotFoundTest()
+    {
+        await Task.Delay(10000);
+
+        var movieService = _testFixture.ServiceProvider.GetRequiredService<IMoviesService>();
+        
+        var movie = await movieService.GetMovieByIdAsync("notExistingMovieId");
+
+        movie.Should().BeNull();
+    }
 }
