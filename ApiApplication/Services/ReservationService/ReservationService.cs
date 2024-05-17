@@ -99,9 +99,17 @@ namespace ApiApplication.Services.ReservationService
             return paidOrNoExpiredReservedSeats;
         }
 
-        public Task<Ticket> ConfirmSeatReservation(Guid ticketId, CancellationToken cancellationToken = default)
+        public async Task<Ticket> ConfirmSeatReservation(Guid ticketId, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            var ticketEntity = await _ticketsRepository.GetAsync(ticketId, cancellationToken);
+            if (ticketEntity is null)
+                throw new NotFoundException($"There is not ticket corresponding to the id {ticketId}");
+            if (ticketEntity.Paid)
+                throw new TicketAlreadyPaidException();
+            if (IsTicketReservationExpired(ticketEntity, _reservationTimeToExpiration))
+                throw new SeatsReservationExpiredException();
+
+            return (await _ticketsRepository.ConfirmPaymentAsync(ticketEntity, cancellationToken)).ToTicket();
         }
 
         private static bool IsTicketReservationExpired(TicketEntity ticketEntity, TimeSpan expirationDelay)
