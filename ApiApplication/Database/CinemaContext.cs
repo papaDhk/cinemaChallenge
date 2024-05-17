@@ -49,6 +49,20 @@ namespace ApiApplication.Database
                 build.HasKey(entry => entry.Id);
                 build.Property(entry => entry.Id).ValueGeneratedOnAdd();
             });
+            
+            modelBuilder.Entity<TicketSeatEntity>()
+                .HasKey(ts => new { ts.TicketId , ts.AuditoriumId, ts.Row, ts.SeatNumber });
+            
+            modelBuilder.Entity<TicketSeatEntity>()
+                .HasOne(ts => ts.TicketEntity)
+                .WithMany(t => t.TicketSeats)
+                .HasForeignKey(ts =>  ts.TicketId); 
+            
+            modelBuilder.Entity<TicketSeatEntity>()
+                .HasOne(ts => ts.SeatEntity)
+                .WithMany(s => s.TicketSeats)
+                .HasForeignKey(ts =>  new { ts.AuditoriumId, ts.Row, ts.SeatNumber })
+                .OnDelete(DeleteBehavior.NoAction); 
         }
     }
 }

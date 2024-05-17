@@ -27,7 +27,7 @@ namespace ApiApplication.Database.Repositories
         {
             return await _context.Tickets
                 .Include(x => x.Showtime)
-                .Include(x => x.Seats)
+                .Include(x => x.TicketSeats).ThenInclude(ts => ts.SeatEntity)
                 .Where(x => x.ShowtimeId == showtimeId)
                 .ToListAsync(cancel);
         }
@@ -36,10 +36,19 @@ namespace ApiApplication.Database.Repositories
         {
             var ticket = _context.Tickets.Add(new TicketEntity
             {
-                Showtime = showtime,
-                Seats = new List<SeatEntity>(selectedSeats)
+                ShowtimeId = showtime.Id
             });
 
+            await _context.SaveChangesAsync(cancel);
+
+            ticket.Entity.TicketSeats = selectedSeats.Select(s => new TicketSeatEntity
+            {
+                AuditoriumId = s.AuditoriumId,
+                Row = s.Row,
+                SeatNumber = s.SeatNumber,
+                TicketId = ticket.Entity.Id,
+            }).ToList();
+            
             await _context.SaveChangesAsync(cancel);
 
             return ticket.Entity;

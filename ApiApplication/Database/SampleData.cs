@@ -16,16 +16,13 @@ namespace ApiApplication.Database
 
             context.Auditoriums.Add(new AuditoriumEntity
             {
-                Id = 1,
                 Showtimes = new List<ShowtimeEntity> 
                 { 
                     new ShowtimeEntity
                     {
-                        Id = 1,
                         SessionDate = new DateTime(2023, 1, 1),
                         Movie = new MovieEntity
                         {
-                            Id = 1,
                             Title = "Inception",
                             ImdbId = "tt1375666",
                             ReleaseDate = new DateTime(2010, 01, 14),
@@ -39,13 +36,11 @@ namespace ApiApplication.Database
 
             context.Auditoriums.Add(new AuditoriumEntity
             {
-                Id = 2,
                 Seats = GenerateSeats(2, 21, 18)
             });
 
             context.Auditoriums.Add(new AuditoriumEntity
             {
-                Id = 3,
                 Seats = GenerateSeats(3, 15, 21)
             });
 

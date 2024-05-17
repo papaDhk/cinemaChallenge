@@ -10,7 +10,6 @@ using ApiApplication.Services.Showtimes;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -43,6 +42,7 @@ namespace ApiApplication
             services.AddTransient<IMoviesService, MoviesService>();
             services.AddTransient<IShowtimesService, ShowtimeService>();
             services.AddTransient<IAuditoriumService, AuditoriumService>();
+            services.AddTransient<IReservationService, ReservationService>();
 
 
             services.AddDbContext<CinemaContext>(options =>

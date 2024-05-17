@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 using ApiApplication.Database.Entities;
@@ -59,7 +58,6 @@ namespace ApiApplication.Services.Showtimes
             return showtimeEntities.Select(s => s.ToShowTime());
         }
 
-        //Could implement this to allow users to see which seats have already been reserved
         public async Task<Showtime> GetShowtimeByIdAsync(int id, CancellationToken cancel)
         {
             var showtimeEntity = await _showtimesRepository.GetWithMoviesByIdAsync(id, cancel);
