@@ -6,6 +6,7 @@ using ApiApplication.Database.Repositories;
 using ApiApplication.Database.Repositories.Abstractions;
 using ApiApplication.Services.Auditorium;
 using ApiApplication.Services.Movies;
+using ApiApplication.Services.ReservationService;
 using ApiApplication.Services.Showtimes;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
