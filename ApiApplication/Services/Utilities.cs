@@ -91,7 +91,7 @@ namespace ApiApplication.Services
             {
                 CreatedTime = ticketEntity.CreatedTime,
                 Id = ticketEntity.Id,
-                Movie = ticketEntity.Showtime.Movie.ToMovie(),
+                Movie = ticketEntity.Showtime?.Movie?.ToMovie(),
                 Paid = ticketEntity.Paid,
                 ShowtimeId = ticketEntity.ShowtimeId,
                 NumberOfSeats = ticketEntity.TicketSeats.Count
