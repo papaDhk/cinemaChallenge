@@ -20,7 +20,10 @@ namespace ApiApplication.Database.Repositories
 
         public Task<TicketEntity> GetAsync(Guid id, CancellationToken cancel)
         {
-            return _context.Tickets.FirstOrDefaultAsync(x => x.Id == id, cancel);
+            return _context.Tickets
+                .Include(x => x.Showtime).ThenInclude(s => s.Movie)
+                .Include(x => x.TicketSeats)
+                .FirstOrDefaultAsync(x => x.Id == id, cancel);
         }
 
         public async Task<IEnumerable<TicketEntity>> GetEnrichedAsync(int showtimeId, CancellationToken cancel)

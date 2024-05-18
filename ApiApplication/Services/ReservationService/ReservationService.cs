@@ -101,6 +101,7 @@ namespace ApiApplication.Services.ReservationService
 
         public async Task<Ticket> ConfirmSeatReservation(Guid ticketId, CancellationToken cancellationToken = default)
         {
+            // we should also have a distributed lock here to avoid race condition
             var ticketEntity = await _ticketsRepository.GetAsync(ticketId, cancellationToken);
             if (ticketEntity is null)
                 throw new NotFoundException($"There is not ticket corresponding to the id {ticketId}");
