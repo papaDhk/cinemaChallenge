@@ -1,4 +1,5 @@
-﻿using ApiApplication.Database.Entities;
+﻿using System.Collections.Generic;
+using ApiApplication.Database.Entities;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 using System.Threading;
@@ -20,6 +21,13 @@ namespace ApiApplication.Database.Repositories
             return await _context.Auditoriums
                 .Include(x => x.Seats)
                 .FirstOrDefaultAsync(x => x.Id == auditoriumId, cancel);
+        }
+
+        public async Task<IEnumerable<AuditoriumEntity>> GetAllAsync(CancellationToken cancel)
+        {
+            return await _context.Auditoriums
+                .Include(x => x.Seats)
+                .ToListAsync(cancel);
         }
     }
 }

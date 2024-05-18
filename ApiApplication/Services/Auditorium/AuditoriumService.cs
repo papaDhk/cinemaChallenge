@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -29,7 +30,7 @@ namespace ApiApplication.Services.Auditorium
             var auditoriumEntity = await _auditoriumsRepository.GetAsync(auditoriumId, cancellationToken);
 
             if (auditoriumEntity is null)
-                throw new NotFoundException("Auditorium not found");
+                throw new NotFoundException("The requested auditorium does not exist");
             
             var seatEntities = auditoriumEntity.Seats;
             var rowsCount = seatEntities.Max(s => s.Row);
@@ -42,6 +43,17 @@ namespace ApiApplication.Services.Auditorium
                 NumberOfSeatsPerRow = numberOfSeatsPerRow,
                 Seats = seatEntities.Select(s => s.ToSeat(rowsCount,numberOfSeatsPerRow))
             };
+        }
+
+        public async Task<IEnumerable<Auditorium>> GetAllAuditoriums(CancellationToken cancellationToken = default)
+        {
+            return (await _auditoriumsRepository.GetAllAsync(cancellationToken)).Select(a => new  Auditorium
+            {
+                Id = a.Id,
+                RowsCount = a.Seats.Max(s => s.Row),
+                NumberOfSeatsPerRow = a.Seats.Max(s => s.SeatNumber)
+            });
+
         }
     }
     
