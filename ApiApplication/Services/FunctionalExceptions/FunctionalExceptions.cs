@@ -26,10 +26,8 @@ namespace ApiApplication.Services
     public class NotEnoughSeatsAvailableException : CustomException
     {
         public override string Code { get; set; } = "NotEnoughSeatsAvailable";
-        public override string Message { get; } = "Not enough seats are available for your reservation request";
-
         
-        public NotEnoughSeatsAvailableException() : base()
+        public NotEnoughSeatsAvailableException() : base("Not enough seats are available for your reservation request")
         {
         }
         
@@ -40,9 +38,8 @@ namespace ApiApplication.Services
     public class SeatsReservationExpiredException : CustomException
     {
         public override string Code { get; set; } = "SeatsReservationExpired";
-        public override string Message { get; } = "The corresponding reservation has expired";
 
-        public SeatsReservationExpiredException()
+        public SeatsReservationExpiredException():base("The corresponding reservation has expired")
         {
         }
         
@@ -53,12 +50,9 @@ namespace ApiApplication.Services
     public class TicketAlreadyPaidException : CustomException
     {
         public override string Code { get; set; } = "TicketAlreadyPaid";
-        public override string Message { get; } = "The ticket corresponding ticket has already been paid ";
-
-
-        public TicketAlreadyPaidException()
+        
+        public TicketAlreadyPaidException():base("The corresponding ticket has already been paid")
         {
-            
         }
         
         public TicketAlreadyPaidException(string? message): base(message){}
@@ -81,15 +75,26 @@ namespace ApiApplication.Services
     public class ShowtimeCreationException : CustomException
     {
         public override string Code { get; set; } = "ShowtimeCreationError";
-        public override string Message { get; } = "Failed to create showtime";
 
 
-        public ShowtimeCreationException()
+        public ShowtimeCreationException():base("Failed to create showtime")
         {
             
         }
         
         public ShowtimeCreationException(string? message): base(message){}
+
+    }
+    
+    public class MoviesServiceNotAvailableException : CustomException
+    {
+        public override string Code { get; set; } = "MoviesServiceNotAvailable";
+
+        public MoviesServiceNotAvailableException():base("The movies service is not available for now")
+        {
+        }
+        
+        public MoviesServiceNotAvailableException(string? message): base(message){}
 
     }
     

@@ -53,6 +53,10 @@ namespace ApiApplication.Services.Movies
                 var cache = await _distributedCache.GetStringAsync(cacheKey);
                 if (cache != null)
                     movies = JsonSerializer.Deserialize<IEnumerable<Movie>>(cache);
+                else
+                {
+                    throw new MoviesServiceNotAvailableException();
+                }
 
                 _logger.LogWarning("Movies cache is being used");
             }
@@ -71,12 +75,23 @@ namespace ApiApplication.Services.Movies
 
         public async Task<Movie> GetMovieByIdAsync(string id, CancellationToken cancellationToken)
         {
-            var movies= await ExecuteAndCacheAsync(async () => {
-                var responses = await _moviesApiClient.GetByIdAsync(new IdRequest{Id = id});
-                responses.Data.TryUnpack<showResponse>(out var data);
-                return new[] { ToMoviesDto(data) };
-            }, string.Format(GeMovieByIdCacheKeyFormat, id));
-            return movies.FirstOrDefault();
+            try
+            {
+                var movies= await ExecuteAndCacheAsync(async () => {
+                    var responses = await _moviesApiClient.GetByIdAsync(new IdRequest{Id = id});
+                    responses.Data.TryUnpack<showResponse>(out var data);
+                    return new[] { ToMoviesDto(data) };
+                }, string.Format(GeMovieByIdCacheKeyFormat, id));
+                return movies.FirstOrDefault();
+            }
+            catch (MoviesServiceNotAvailableException)
+            {
+                //This is to try using the cache of GetAllMoviesAsync request
+                var movies = await GetAllMoviesAsync(cancellationToken);
+
+                return movies.FirstOrDefault(m =>
+                    string.Compare(m.ImdbId, id, StringComparison.InvariantCultureIgnoreCase) == 0);
+            }
         }
 
         private static Movie ToMoviesDto(showResponse showResponse)
@@ -87,13 +102,7 @@ namespace ApiApplication.Services.Movies
                 {
                     ImdbId = showResponse.Id,
                     Stars = showResponse.Crew,
-                    FullTitle = showResponse.FullTitle,
                     Title = showResponse.Title,
-                    Image = showResponse.Image,
-                    ImDbRating = showResponse.ImDbRating,
-                    ImDbRatingCount = showResponse.ImDbRatingCount,
-                    Rank = showResponse.Rank,
-                    Year = showResponse.Year,
                 };
         }
     }
