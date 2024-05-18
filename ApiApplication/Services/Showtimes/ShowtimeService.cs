@@ -27,17 +27,17 @@ namespace ApiApplication.Services.Showtimes
         public async Task<Showtime> CreateShowtime(ShowTimeCreationParameters showTimeCreationParameters, CancellationToken cancel)
         {
             if(showTimeCreationParameters.SessionDate < DateTime.UtcNow)
-                throw new ArgumentException("Cannot create a showtime in the past");
+                throw new ShowtimeCreationException("Cannot create a showtime in the past");
             
             var isAuditoriumAvailable = await _auditoriumService.IsAuditoriumAvailable(showTimeCreationParameters.AuditoriumId, showTimeCreationParameters.SessionDate, TimeSpan.FromHours(2), cancel);
             if (!isAuditoriumAvailable)
-                throw new ArgumentException("The auditorium requested for this showtime is not available");
+                throw new AuditoriumNotAvailableException("The auditorium requested for this showtime is not available");
             //Ideally we should make sure the auditorium is available for the movie duration,
             //i.e there is no scheduled show during the session date and the session date + movie duration
             
             var movie = await _moviesService.GetMovieByIdAsync(showTimeCreationParameters.MovieImDbId, cancel);
             if (movie is null)
-                throw new ArgumentException("The movie requested for this showtime is not available");
+                throw new NotFoundException("The movie requested for this showtime is not found");
             
             var showtimeEntity = new ShowtimeEntity
             {
