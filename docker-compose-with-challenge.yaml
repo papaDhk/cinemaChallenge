@@ -15,3 +15,14 @@ services:
     restart: unless-stopped
     ports:
       - "6379:6379"
+  cinema:
+    build:
+      context: ./ApiApplication
+    ports:
+      - "7234:8080"
+      - "7235:443"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=https://443+;http://+:8080
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=mypassword
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/app/https/aspnetapp.pfx
