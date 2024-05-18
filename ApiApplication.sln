@@ -11,6 +11,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		docker-compose.yaml = docker-compose.yaml
 		Feedback.md = Feedback.md
 		Readme.md = Readme.md
+		docker-compose-with-challenge.yaml = docker-compose-with-challenge.yaml
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{D4B7E8B5-AFD4-4FF1-912E-53404EBBDD0A}"
