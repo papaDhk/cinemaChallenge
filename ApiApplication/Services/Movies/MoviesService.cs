@@ -16,6 +16,9 @@ namespace ApiApplication.Services.Movies
         private readonly MoviesApi.MoviesApiClient _moviesApiClient;
         private readonly IDistributedCache _distributedCache;
         private readonly ILogger<MoviesService> _logger;
+        private const string GetAllMoviesCacheKey = "GetAllMovies";
+        private const string GeMovieByIdCacheKeyFormat = "GeMovieById-{0}";
+        private const string SearchMovieCacheKeyFormat = "SearchMovieById-{0}";
 
         public MoviesService(MoviesApi.MoviesApiClient moviesApiClient, IDistributedCache distributedCache, ILogger<MoviesService> logger)
         {
@@ -30,7 +33,7 @@ namespace ApiApplication.Services.Movies
                 var responses = await _moviesApiClient.GetAllAsync(new Empty());
                 responses.Data.TryUnpack<showListResponse>(out var data);
                 return data.Shows.Select(ToMoviesDto).ToList();
-            }, nameof(GetAllMoviesAsync));
+            }, GetAllMoviesCacheKey);
 
             return movies;
         }
@@ -43,6 +46,7 @@ namespace ApiApplication.Services.Movies
                 movies = await operation();
                 var moviesJson = JsonSerializer.Serialize(movies);
                 await _distributedCache.SetStringAsync(cacheKey, moviesJson, CancellationToken.None);
+                _logger.LogInformation("Movies api is working well");
             }
             catch (RpcException ex)
             {
@@ -50,7 +54,7 @@ namespace ApiApplication.Services.Movies
                 if (cache != null)
                     movies = JsonSerializer.Deserialize<IEnumerable<Movie>>(cache);
 
-                _logger.LogError("Not able to have a successful response from movies API", ex);
+                _logger.LogWarning("Movies cache is being used");
             }
             return movies.ToList();
         }
@@ -61,7 +65,7 @@ namespace ApiApplication.Services.Movies
                 var responses = await _moviesApiClient.SearchAsync(new SearchRequest{Text = search});
                 responses.Data.TryUnpack<showListResponse>(out var data);
                 return data.Shows.Select(ToMoviesDto).ToList();
-            }, nameof(SearchMoviesAsync));
+            }, string.Format(SearchMovieCacheKeyFormat, search));
 
         }
 
@@ -71,7 +75,7 @@ namespace ApiApplication.Services.Movies
                 var responses = await _moviesApiClient.GetByIdAsync(new IdRequest{Id = id});
                 responses.Data.TryUnpack<showResponse>(out var data);
                 return new[] { ToMoviesDto(data) };
-            }, nameof(GetMovieByIdAsync));
+            }, string.Format(GeMovieByIdCacheKeyFormat, id));
             return movies.FirstOrDefault();
         }
 
