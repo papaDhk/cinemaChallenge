@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using ApiApplication.Database;
 using ApiApplication.Database.Repositories;
 using ApiApplication.Database.Repositories.Abstractions;
+using ApiApplication.Middleware;
 using ApiApplication.Services.Auditorium;
 using ApiApplication.Services.Movies;
 using ApiApplication.Services.ReservationService;
@@ -11,6 +12,7 @@ using ApiApplication.Services.Showtimes;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -65,11 +67,11 @@ namespace ApiApplication
                         };
                         channelOptions.HttpHandler = httpHandler;
                     });
-                    o.Address = new Uri("https://localhost:7443");
+                    o.Address = new Uri(Configuration.GetValue<string>("MoviesApi:Address"));
                 })
                 .AddCallCredentials((context, metadata) =>
                 {
-                    metadata.Add("X-Apikey", "68e5fbda-9ec9-4858-97b2-4a8349764c63");
+                    metadata.Add("X-Apikey", Configuration.GetValue<string>("MoviesApi:ApiKey"));
                     return Task.CompletedTask;
                 });
             
@@ -82,9 +84,11 @@ namespace ApiApplication
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.UseMiddleware<CustomExceptionsHandlerMiddleware>();
+
             if (env.IsDevelopment())
             {
-                app.UseDeveloperExceptionPage();
+                //app.UseDeveloperExceptionPage();
             }
 
             app.UseHttpsRedirection();
@@ -97,6 +101,8 @@ namespace ApiApplication
             {
                 endpoints.MapControllers();
             });
+            
+
             using var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope();
             SampleData.Initialize(serviceScope.ServiceProvider);
         }      
