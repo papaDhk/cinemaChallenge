@@ -51,6 +51,16 @@ namespace ApiApplication.Services.ReservationService
             if (numberOfSeatsToReserve == 1)
                 return new[] { availableSeats[0] };
 
+            if (numberOfSeatsToReserve == availableSeats.Count)
+            {
+                var areSeatsContiguous = availableSeats.Last().VirtualSeatNumber - availableSeats.First().VirtualSeatNumber + 1 == numberOfSeatsToReserve;
+                if(areSeatsContiguous)
+                    return availableSeats;
+                
+                throw new NotEnoughSeatsAvailableException($"Unable to find {numberOfSeatsToReserve} contiguous free seats");
+            }  
+                
+
             var found = false;
             while (i < availableSeats.Count - numberOfSeatsToReserve && !found)
             {
