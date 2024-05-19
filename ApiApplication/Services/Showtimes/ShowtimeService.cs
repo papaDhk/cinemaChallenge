@@ -24,7 +24,7 @@ namespace ApiApplication.Services.Showtimes
             _auditoriumService = auditoriumService ?? throw new ArgumentNullException(nameof(auditoriumService));
         }
 
-        public async Task<Showtime> CreateShowtime(ShowTimeCreationParameters showTimeCreationParameters, CancellationToken cancel)
+        public async Task<Showtime> CreateShowtime(ShowTimeCreationParameters showTimeCreationParameters, CancellationToken cancel = default)
         {
             if(showTimeCreationParameters.SessionDate < DateTime.UtcNow)
                 throw new ShowtimeCreationException("Cannot create a showtime in the past");
@@ -53,13 +53,13 @@ namespace ApiApplication.Services.Showtimes
 
         }
 
-        public async Task<IEnumerable<Showtime>> GetAllAsync(CancellationToken cancel)
+        public async Task<IEnumerable<Showtime>> GetAllAsync(CancellationToken cancel = default)
         {
             var showtimeEntities = await _showtimesRepository.GetAllAsync(null, cancel);
             return showtimeEntities.Select(s => s.ToShowTime());
         }
 
-        public async Task<Showtime> GetShowtimeByIdAsync(int id, CancellationToken cancel)
+        public async Task<Showtime> GetShowtimeByIdAsync(int id, CancellationToken cancel = default)
         {
             var showtimeEntity = await _showtimesRepository.GetWithMoviesByIdAsync(id, cancel);
             return showtimeEntity.ToShowTime();

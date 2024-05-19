@@ -51,7 +51,21 @@ namespace ApiApplication.Services
             };
         }
         
-        public static Seat ToSeat(this SeatEntity seatEntity, short auditoriumRowCount, short auditoriumSeatPerRow )
+        public static ShowtimeEntity ToShowtimeEntity(this Showtime showtime)
+        {
+            if (showtime is null)
+                return null;
+
+            return new ShowtimeEntity
+            {
+                AuditoriumId = showtime.AuditoriumId,
+                Movie = showtime.Movie.ToMovieEntity(),
+                Id = showtime.Id,
+                SessionDate = showtime.SessionDate
+            };
+        }
+        
+        public static Seat ToSeat(this SeatEntity seatEntity, short auditoriumSeatPerRow )
         {
             if (seatEntity is null)
                 return null;

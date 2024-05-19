@@ -9,5 +9,6 @@ namespace ApiApplication.Services.Auditorium
         public IEnumerable<Seat> Seats { get; set; }
         public short RowsCount { get; set; }
         public short NumberOfSeatsPerRow { get; set; }
+        public int Size => NumberOfSeatsPerRow * RowsCount;
     }
 }

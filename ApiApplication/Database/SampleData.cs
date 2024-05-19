@@ -47,7 +47,7 @@ namespace ApiApplication.Database
             context.SaveChanges();
         }
 
-        private static List<SeatEntity> GenerateSeats(int auditoriumId, short rows, short seatsPerRow)
+        public static List<SeatEntity> GenerateSeats(int auditoriumId, short rows, short seatsPerRow)
         {
             var seats = new List<SeatEntity>();
             for (short r = 1; r <= rows; r++)

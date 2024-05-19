@@ -41,7 +41,7 @@ namespace ApiApplication.Services.Auditorium
                 Id = auditoriumEntity.Id,
                 RowsCount = rowsCount,
                 NumberOfSeatsPerRow = numberOfSeatsPerRow,
-                Seats = seatEntities.Select(s => s.ToSeat(rowsCount,numberOfSeatsPerRow))
+                Seats = seatEntities.Select(s => s.ToSeat(numberOfSeatsPerRow))
             };
         }
 
