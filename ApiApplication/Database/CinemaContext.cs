@@ -34,7 +34,7 @@ namespace ApiApplication.Database
             {
                 build.HasKey(entry => entry.Id);
                 build.Property(entry => entry.Id).ValueGeneratedOnAdd();
-                build.HasOne(entry => entry.Movie).WithMany(entry => entry.Showtimes);
+                build.HasOne(entry => entry.Movie).WithMany(entry => entry.Showtimes).HasForeignKey(entry => entry.MovieId);
                 build.HasMany(entry => entry.Tickets).WithOne(entry => entry.Showtime).HasForeignKey(entry => entry.ShowtimeId);
             });
 
