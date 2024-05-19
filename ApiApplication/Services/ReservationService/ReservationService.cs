@@ -45,7 +45,7 @@ namespace ApiApplication.Services.ReservationService
             return ticketEntity.ToTicket();
         }
 
-        private static IEnumerable<Seat> SelectContiguousSeatToReserve(IReadOnlyList<Seat> availableSeats, int numberOfSeatsToReserve)
+        public static IEnumerable<Seat> SelectContiguousSeatToReserve(IReadOnlyList<Seat> availableSeats, int numberOfSeatsToReserve)
         {
             var i = 0;
             if (numberOfSeatsToReserve == 1)
@@ -64,7 +64,7 @@ namespace ApiApplication.Services.ReservationService
             var found = false;
             while (i < availableSeats.Count - numberOfSeatsToReserve && !found)
             {
-                for (var j = 1; j < availableSeats.Count; j++)
+                for (var j = i+1; j < availableSeats.Count; j++)
                 {
                     if (availableSeats[j].VirtualSeatNumber - availableSeats[j-1].VirtualSeatNumber == 1)
                     {
@@ -95,7 +95,7 @@ namespace ApiApplication.Services.ReservationService
             var auditoriumId = showtime.AuditoriumId;
             var auditorium = await _auditoriumService.GetAuditorium(auditoriumId, cancellationToken);
             var reservedSeats = (await GetReservedSeats(showtimeId, cancellationToken))
-                .Select(s => s.ToSeat(auditorium.RowsCount, auditorium.NumberOfSeatsPerRow));
+                .Select(s => s.ToSeat(auditorium.NumberOfSeatsPerRow));
             return auditorium.Seats.ExceptBy(reservedSeats, seat => seat.VirtualSeatNumber).ToArray();
         }
         
