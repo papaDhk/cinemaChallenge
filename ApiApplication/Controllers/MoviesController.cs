@@ -20,7 +20,6 @@ namespace ApiApplication.Controllers
             _moviesService = moviesService;
         }
         
-        // GET
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Movie>>> GetMovies()
         {

@@ -16,7 +16,6 @@ namespace ApiApplication.Controllers
             _showtimesService = showtimesService;
         }
         
-        // GET
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Showtime>>> GetShowtimes()
         {

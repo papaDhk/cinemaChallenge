@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using ApiApplication.Database.Entities;
+using ApiApplication.Database.Repositories.Abstractions;
 using Grpc.Core;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
@@ -15,16 +17,18 @@ namespace ApiApplication.Services.Movies
     {
         private readonly MoviesApi.MoviesApiClient _moviesApiClient;
         private readonly IDistributedCache _distributedCache;
+        private readonly IMoviesRepository _moviesRepository;
         private readonly ILogger<MoviesService> _logger;
         private const string GetAllMoviesCacheKey = "GetAllMovies";
         private const string GeMovieByIdCacheKeyFormat = "GeMovieById-{0}";
         private const string SearchMovieCacheKeyFormat = "SearchMovieById-{0}";
 
-        public MoviesService(MoviesApi.MoviesApiClient moviesApiClient, IDistributedCache distributedCache, ILogger<MoviesService> logger)
+        public MoviesService(MoviesApi.MoviesApiClient moviesApiClient, IDistributedCache distributedCache, ILogger<MoviesService> logger, IMoviesRepository moviesRepository)
         {
-            _moviesApiClient = moviesApiClient;
-            _distributedCache = distributedCache;
-            _logger = logger;
+            _moviesApiClient = moviesApiClient ?? throw new ArgumentNullException(nameof(moviesApiClient));
+            _distributedCache = distributedCache ?? throw new ArgumentNullException(nameof(distributedCache));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _moviesRepository = moviesRepository ?? throw new ArgumentNullException(nameof(moviesRepository));
         }
 
         public async Task<IReadOnlyCollection<Movie>> GetAllMoviesAsync(CancellationToken cancellationToken)
@@ -70,11 +74,17 @@ namespace ApiApplication.Services.Movies
                 responses.Data.TryUnpack<showListResponse>(out var data);
                 return data.Shows.Select(ToMoviesDto).ToList();
             }, string.Format(SearchMovieCacheKeyFormat, search));
-
         }
 
         public async Task<Movie> GetMovieByIdAsync(string id, CancellationToken cancellationToken)
         {
+            //Check if the movie already exists i our database
+            var movieEntity = await _moviesRepository.GetMovieByImdbIdAsync(id, cancellationToken);
+            if (movieEntity != null)
+                return movieEntity.ToMovie();
+            
+            //If it does not exists in database, we fetch it from the movies service
+            Movie externalMovie = null;
             try
             {
                 var movies= await ExecuteAndCacheAsync(async () => {
@@ -82,16 +92,23 @@ namespace ApiApplication.Services.Movies
                     responses.Data.TryUnpack<showResponse>(out var data);
                     return new[] { ToMoviesDto(data) };
                 }, string.Format(GeMovieByIdCacheKeyFormat, id));
-                return movies.FirstOrDefault();
+                externalMovie = movies.FirstOrDefault();
             }
             catch (MoviesServiceNotAvailableException)
             {
                 //This is to try using the cache of GetAllMoviesAsync request
                 var movies = await GetAllMoviesAsync(cancellationToken);
 
-                return movies.FirstOrDefault(m =>
+                externalMovie = movies.FirstOrDefault(m =>
                     string.Compare(m.ImdbId, id, StringComparison.InvariantCultureIgnoreCase) == 0);
             }
+
+            if (externalMovie is null)
+                throw new NotFoundException("The movie requested for this showtime is not found");
+            
+            movieEntity = await _moviesRepository.CreateMovieAsync(externalMovie.ToMovieEntity(), cancellationToken);
+
+            return movieEntity.ToMovie();
         }
 
         private static Movie ToMoviesDto(showResponse showResponse)

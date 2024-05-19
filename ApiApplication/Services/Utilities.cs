@@ -14,6 +14,7 @@ namespace ApiApplication.Services
             
             return new MovieEntity
             {
+                Id = movie.Id,
                 ImdbId = movie.ImdbId,
                 ReleaseDate = movie.ReleaseDate,
                 Stars = movie.Stars,
@@ -28,6 +29,7 @@ namespace ApiApplication.Services
             
             return new Movie
             {
+                Id = movie.Id,
                 ImdbId = movie.ImdbId,
                 ReleaseDate = movie.ReleaseDate,
                 Stars = movie.Stars,

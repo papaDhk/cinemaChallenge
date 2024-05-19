@@ -78,14 +78,18 @@ namespace ApiApplication.Services.ReservationService
 
         public async Task<IEnumerable<Seat>> GetAvailableSeats(int showtimeId, CancellationToken cancellationToken = default)
         {
-            var auditoriumId = (await _showtimesService.GetShowtimeByIdAsync(showtimeId, cancellationToken)).AuditoriumId;
+            var showtime = await _showtimesService.GetShowtimeByIdAsync(showtimeId, cancellationToken);
+            if (showtime is null)
+                throw new NotFoundException($"There is no showtime with id {showtimeId}");
+            
+            var auditoriumId = showtime.AuditoriumId;
             var auditorium = await _auditoriumService.GetAuditorium(auditoriumId, cancellationToken);
             var reservedSeats = (await GetReservedSeats(showtimeId, cancellationToken))
                 .Select(s => s.ToSeat(auditorium.RowsCount, auditorium.NumberOfSeatsPerRow));
             return auditorium.Seats.ExceptBy(reservedSeats, seat => seat.VirtualSeatNumber).ToArray();
         }
         
-        public async Task<IEnumerable<SeatEntity>> GetReservedSeats(int showtimeId, CancellationToken cancellationToken = default)
+        private async Task<IEnumerable<SeatEntity>> GetReservedSeats(int showtimeId, CancellationToken cancellationToken = default)
         {
             var tickets = (await _ticketsRepository.GetEnrichedAsync(showtimeId, cancellationToken)).ToArray();
 

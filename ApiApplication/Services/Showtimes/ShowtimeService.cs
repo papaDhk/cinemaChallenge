@@ -42,11 +42,12 @@ namespace ApiApplication.Services.Showtimes
             var showtimeEntity = new ShowtimeEntity
             {
                 SessionDate = showTimeCreationParameters.SessionDate,
-                Movie = movie.ToMovieEntity(),
                 AuditoriumId = 1,
+                MovieId = movie.Id
             };
             
             showtimeEntity = await _showtimesRepository.CreateShowtime(showtimeEntity, cancel);
+            showtimeEntity.Movie = movie.ToMovieEntity();
 
             return showtimeEntity.ToShowTime();
 
