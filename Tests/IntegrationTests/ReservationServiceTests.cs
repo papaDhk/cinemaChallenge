@@ -31,10 +31,11 @@ public class ReservationServiceTests : IClassFixture<TestFixture>
         //     SessionDate = DateTime.UtcNow.AddDays(1),
         // }, CancellationToken.None);
         
-        var ticket = await reservationService.ReserveSeats(22, 617);
+        var ticket = await reservationService.ReserveSeats(22, 7);
         
-        //var ticket2 = await reservationService.ReserveSeats(22, 4);
+        ticket = await reservationService.ConfirmSeatReservation(ticket.Id);
         
         ticket.Should().NotBeNull();
+        ticket.Paid.Should().BeTrue();
     }
 }

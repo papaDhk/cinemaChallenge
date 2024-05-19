@@ -9,7 +9,7 @@ namespace Tests;
 public class MoviesServiceTests : IClassFixture<TestFixture>
 {
     private readonly TestFixture _testFixture;
-    public MoviesServiceTests(TestFixture fixture, TestFixture testFixture)
+    public MoviesServiceTests(TestFixture testFixture)
     {
         _testFixture = testFixture;
     }
