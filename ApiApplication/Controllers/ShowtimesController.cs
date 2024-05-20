@@ -23,7 +23,7 @@ namespace ApiApplication.Controllers
             return  Ok(showtimes);
         }
         
-        [HttpPost]
+        [HttpPost("/create")]
         public async Task<ActionResult<Showtime>> CreateShowtime([FromBody] ShowTimeCreationParameters creationParameters)
         {
             var showtime = await _showtimesService.CreateShowtime(creationParameters);
