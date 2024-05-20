@@ -1,6 +1,6 @@
 using Ductus.FluentDocker.Services;
 
-namespace Tests.IntegrationTests;
+namespace IntegrationTests;
 
 public abstract class DockerComposeTestBase : IDisposable
 {

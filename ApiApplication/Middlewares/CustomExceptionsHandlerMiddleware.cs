@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using ApiApplication.Services;
 using Microsoft.AspNetCore.Http;
 
-namespace ApiApplication.Middleware
+namespace ApiApplication.Middlewares
 {
     public class CustomExceptionsHandlerMiddleware
     {

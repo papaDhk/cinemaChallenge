@@ -1,11 +1,12 @@
 using ApiApplication.Services.ReservationService;
 using ApiApplication.Services.Showtimes;
+using ApiApplication.Services.Showtimes.Models;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Tests.IntegrationTests;
 using Xunit;
 
-namespace Tests;
+namespace IntegrationTests;
 
 public class ReservationServiceTests : IClassFixture<TestFixture>
 {

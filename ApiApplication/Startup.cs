@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using ApiApplication.Database;
 using ApiApplication.Database.Repositories;
 using ApiApplication.Database.Repositories.Abstractions;
-using ApiApplication.Middleware;
+using ApiApplication.Middlewares;
 using ApiApplication.Services.Auditorium;
 using ApiApplication.Services.Movies;
 using ApiApplication.Services.ReservationService;

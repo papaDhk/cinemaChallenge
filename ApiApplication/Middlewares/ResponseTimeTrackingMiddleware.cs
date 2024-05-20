@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 
-namespace ApiApplication.Middleware
+namespace ApiApplication.Middlewares
 {
     public class ResponseTimeTrackingMiddleware
     {
