@@ -3,7 +3,6 @@ using ApiApplication.Services.Showtimes;
 using ApiApplication.Services.Showtimes.Models;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
-using Tests.IntegrationTests;
 using Xunit;
 
 namespace IntegrationTests;
@@ -17,22 +16,25 @@ public class ReservationServiceTests : IClassFixture<TestFixture>
     }
     
     [Fact]
-    public async Task ReserveSeatsTest()
+    public async Task ReserveSeatsGeneralTest()
     {
+        //This is bad, find a better way to wait for containers to run
         await Task.Delay(10000);
 
         var showtimesService = _testFixture.ServiceProvider.GetRequiredService<IShowtimesService>();
         var reservationService = _testFixture.ServiceProvider.GetRequiredService<IReservationService>();
+        const int numberOfSeatsToReserve = 5;
 
-        // var movieImDbId = "tt0111161";
-        // var showtime = await showtimesService.CreateShowtime(new ShowTimeCreationParameters
-        // {
-        //     AuditoriumId = 1,
-        //     MovieImDbId = movieImDbId,
-        //     SessionDate = DateTime.UtcNow.AddDays(1),
-        // }, CancellationToken.None);
+         var movieImDbId = "tt0111161";
+         var showtime = await showtimesService.CreateShowtime(new ShowTimeCreationParameters
+         {
+            AuditoriumId = 1,
+            MovieImDbId = movieImDbId,
+            SessionDate = DateTime.UtcNow.AddDays(1),
+         }, CancellationToken.None);
         
-        var ticket = await reservationService.ReserveSeats(22, 7);
+        var ticket = await reservationService.ReserveSeats(showtime.Id, numberOfSeatsToReserve);
+        ticket.NumberOfSeats.Should().Be(numberOfSeatsToReserve);
         
         ticket = await reservationService.ConfirmSeatReservation(ticket.Id);
         

@@ -17,6 +17,7 @@ public class MoviesServiceTests : IClassFixture<TestFixture>
     [Fact]
     public async Task GetAllMoviesAsync_ShouldReturnMovies()
     {
+        //This is bad, find a better way to wait for containers to run
         await Task.Delay(10000);
 
         var movieService = _testFixture.ServiceProvider.GetRequiredService<IMoviesService>();

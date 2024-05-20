@@ -7,10 +7,10 @@ using Xunit;
 
 namespace Testss.Endpoints;
 
-public class ShowtimesEndpointsTests : IClassFixture<EndpointTestWebAppFactory>
+public class ShowtimesEndpointsTestsExample : IClassFixture<EndpointTestWebAppFactory>
 {
     private readonly HttpClient _httpClient;
-    public ShowtimesEndpointsTests(EndpointTestWebAppFactory fixture)
+    public ShowtimesEndpointsTestsExample(EndpointTestWebAppFactory fixture)
     {
         _httpClient = fixture.CreateClient();
     }

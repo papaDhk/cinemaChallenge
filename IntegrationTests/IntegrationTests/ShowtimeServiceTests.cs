@@ -15,8 +15,9 @@ public class ShowtimeServiceTests : IClassFixture<TestFixture>
     }
     
     [Fact]
-    public async Task CreateShowTimeTest()
+    public async Task CreateShowTimeGeneralTest()
     {
+        //This is bad, find a better way to wait for containers to run
         await Task.Delay(10000);
 
         var showtimesService = _testFixture.ServiceProvider.GetRequiredService<IShowtimesService>();

@@ -55,7 +55,7 @@ namespace ApiApplication
                 options.UseInMemoryDatabase("CinemaDb")
                     .EnableSensitiveDataLogging()
                     .ConfigureWarnings(b => b.Ignore(InMemoryEventId.TransactionIgnoredWarning));
-            });
+            }, ServiceLifetime.Transient);
 
             services.AddHttpClient();
             services.AddGrpcClient<MoviesApi.MoviesApiClient>(o =>
