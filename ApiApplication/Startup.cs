@@ -16,6 +16,7 @@ using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.OpenApi.Models;
 using ProtoDefinitions;
 
 namespace ApiApplication
@@ -81,6 +82,15 @@ namespace ApiApplication
                 options.Configuration = Configuration.GetConnectionString("Redis");
                 options.InstanceName = "CachingInstance1";
             });
+            
+            services.AddSwaggerGen();
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v0", new OpenApiInfo{
+                    Version = "v0",
+                    Title = "Cinema challenge api",
+                });
+            });
         }
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -104,7 +114,11 @@ namespace ApiApplication
                 endpoints.MapControllers();
             });
             
-
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>{
+                c.SwaggerEndpoint("/swagger/v0/swagger.json", "Cinema challenge v0");
+            });
+            
             using var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope();
             SampleData.Initialize(serviceScope.ServiceProvider);
         }      

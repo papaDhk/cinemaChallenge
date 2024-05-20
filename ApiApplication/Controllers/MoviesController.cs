@@ -1,10 +1,9 @@
-using System;
 using System.Collections.Generic;
-using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using ApiApplication.Services;
 using ApiApplication.Services.Movies;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ApiApplication.Controllers
@@ -21,6 +20,9 @@ namespace ApiApplication.Controllers
         }
         
         [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(Error),StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(typeof(Error),StatusCodes.Status503ServiceUnavailable)]
         public async Task<ActionResult<IEnumerable<Movie>>> GetMovies()
         {
             var movies = await _moviesService.GetAllMoviesAsync(CancellationToken.None);

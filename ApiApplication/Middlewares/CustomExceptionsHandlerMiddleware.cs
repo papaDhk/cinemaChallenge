@@ -24,15 +24,39 @@ namespace ApiApplication.Middlewares
             }
             catch (NotFoundException ex)
             {
-              await HandleException(context, ex, 404, ex.Code, ex.Message);
+              await HandleException(context, ex, (int)HttpStatusCode.NotFound, ex.Code, ex.Message);
+            }
+            catch (ShowtimeCreationException ex)
+            {
+                await HandleException(context, ex, (int)HttpStatusCode.BadRequest, ex.Code, ex.Message);
+            }
+            catch (AuditoriumNotAvailableException ex)
+            {
+                await HandleException(context, ex, (int)HttpStatusCode.Conflict, ex.Code, ex.Message);
+            }
+            catch (TicketAlreadyPaidException ex)
+            {
+                await HandleException(context, ex, (int)HttpStatusCode.Conflict, ex.Code, ex.Message);
+            }
+            catch (SeatsReservationExpiredException ex)
+            {
+                await HandleException(context, ex, (int)HttpStatusCode.Conflict, ex.Code, ex.Message);
+            }
+            catch (NotEnoughSeatsAvailableException ex)
+            {
+                await HandleException(context, ex, (int)HttpStatusCode.Conflict, ex.Code, ex.Message);
+            }
+            catch (MoviesServiceNotAvailableException ex)
+            {
+                await HandleException(context, ex, (int)HttpStatusCode.ServiceUnavailable, ex.Code, ex.Message);
             }
             catch (CustomException ex)
             {
-                await HandleException(context, ex, 400, ex.Code, ex.Message);
+                await HandleException(context, ex, (int)HttpStatusCode.BadRequest, ex.Code, ex.Message);
             }
             catch (Exception ex)
             {
-                await HandleException(context, ex, 500, "InternalError", "An internal error occured while processing your request, please contact the support");
+                await HandleException(context, ex, (int)HttpStatusCode.InternalServerError, "InternalError", "An internal error occured while processing your request, please contact the support");
             }
         }
 
@@ -41,7 +65,7 @@ namespace ApiApplication.Middlewares
             LogException(ex);
             context.Response.StatusCode = statusCode;
             context.Response.ContentType = "application/json";
-            await context.Response.WriteAsync(JsonSerializer.Serialize(new{ErrorCode = errorCode, ErrorMessage = errorMessage }));
+            await context.Response.WriteAsync(JsonSerializer.Serialize(new Error { ErrorCode = errorCode, ErrorMessage = errorMessage }));
         }
         
         private static void LogException(Exception ex)

@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using ApiApplication.Services;
 using ApiApplication.Services.Auditorium;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ApiApplication.Controllers
@@ -19,6 +21,8 @@ namespace ApiApplication.Controllers
         
         // GET
         [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(Error),StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<IEnumerable<Auditorium>>> GetAll()
         {
             var auditoriums = await _auditoriumService.GetAllAuditoriums(CancellationToken.None);
