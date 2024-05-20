@@ -45,11 +45,11 @@ namespace ApiApplication.Controllers
             return  CreatedAtAction(nameof(ReserveSeat), ticket);
         }
         
-        [HttpGet("availableSeats/{showtimeId:int}")]
+        [HttpGet("available-seats")]
         [ProducesResponseType(typeof(Error),StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(Error),StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(Error),StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<IEnumerable<Seat>>> GetAvailableSeats(int showtimeId)
+        public async Task<ActionResult<IEnumerable<Seat>>> GetAvailableSeats([FromQuery]int showtimeId)
         {
             var availableSeats = await _reservationService.GetAvailableSeats(showtimeId);
             return  Ok(availableSeats);
