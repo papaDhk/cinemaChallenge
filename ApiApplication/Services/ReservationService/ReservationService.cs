@@ -28,7 +28,7 @@ namespace ApiApplication.Services.ReservationService
 
         public async Task<Ticket> ReserveSeats(int showtimeId, int numberOfSeats, CancellationToken cancellationToken = default)
         {
-            // Avoid race condition by implementing a distributed lock
+            // Avoid race condition by implementing a lock: optimistic lock, pessimistic lock or a distributed lock for distributed systems
             
             var availableSeats = (await GetAvailableSeats(showtimeId, cancellationToken)).ToArray();
 

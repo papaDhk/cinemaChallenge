@@ -1,2 +1,16 @@
 Please add the cURLs of your tests here:
 
+- Get auditoriums: curl --location 'https://localhost:7235/api/auditoriums'
+- Get movies: curl --location 'https://localhost:7235/api/movies'
+- Get showtimes: curl --location 'https://localhost:7235/api/showtimes'
+- Create showtime: curl --location 'https://localhost:7235/api/showtimes/create' \
+                 --header 'Content-Type: application/json' \
+                 --data '{
+                     "AuditoriumId": 1,
+                     "SessionDate": "2025-12-01",
+                     "MovieImDbId": "tt1375666"
+                 }'
+- Get available seats: curl --location 'https://localhost:7235/api/reservations/available-seats?showtimeId=1'
+- Reserve seats: curl --location --request POST 'https://localhost:7235/api/reservations?showtimeId=1&numberOfSeats=5'   
+- Pay ticket: curl --location --request POST 'https://localhost:7235/api/reservations/confirm/71db4b19-40d2-4e0c-82d0-b903f5b07608'              
+
