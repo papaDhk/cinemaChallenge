@@ -1,35 +1,35 @@
+using Ductus.FluentDocker.Model.Common;
+using Ductus.FluentDocker.Model.Compose;
 using Ductus.FluentDocker.Services;
+using Ductus.FluentDocker.Services.Impl;
 
 namespace IntegrationTests;
 
-public abstract class DockerComposeTestBase : IDisposable
+public class DockerComposeTestBase : IDisposable
 {
-    protected ICompositeService CompositeService;
-    protected IHostService? DockerHost;
+    private ICompositeService _compositeService;
+    private IHostService? _dockerHost;
 
     public DockerComposeTestBase()
     {
         EnsureDockerHost();
 
-        CompositeService = Build();
+        _compositeService = Build();
         try
         {
-            CompositeService.Start();
+            _compositeService.Start();
         }
         catch(Exception e)
         {
-            CompositeService.Dispose();
+            _compositeService.Dispose();
             throw;
         }
-
-        OnContainerInitialized();
     }
 
     public void Dispose()
     {
-        OnContainerTearDown();
-        var compositeService = CompositeService;
-        CompositeService = null!;
+        var compositeService = _compositeService;
+        _compositeService = null!;
         try
         {
             compositeService?.Dispose();
@@ -40,33 +40,39 @@ public abstract class DockerComposeTestBase : IDisposable
         }
     }
 
-    protected abstract ICompositeService Build();
-
-    protected virtual void OnContainerTearDown()
+    public ICompositeService Build()
     {
-    }
+        var file = Path.Combine(Directory.GetCurrentDirectory(),
+            (TemplateString)"IntegrationTests/docker-compose.yaml");
 
-    protected virtual void OnContainerInitialized()
-    {
+        return new DockerComposeCompositeService(
+            _dockerHost,
+            new DockerComposeConfig
+            {
+                ComposeFilePath = new List<string> { file },
+                ForceRecreate = true,
+                RemoveOrphans = true,
+                StopOnDispose = true
+            });
     }
 
     private void EnsureDockerHost()
     {
-        if (DockerHost?.State == ServiceRunningState.Running) return;
+        if (_dockerHost?.State == ServiceRunningState.Running) return;
 
         var hosts = new Hosts().Discover();
-        DockerHost = hosts.FirstOrDefault(x => x.IsNative) ?? hosts.FirstOrDefault(x => x.Name == "default");
+        _dockerHost = hosts.FirstOrDefault(x => x.IsNative) ?? hosts.FirstOrDefault(x => x.Name == "default");
 
-        if (null != DockerHost)
+        if (null != _dockerHost)
         {
-            if (DockerHost.State != ServiceRunningState.Running) DockerHost.Start();
+            if (_dockerHost.State != ServiceRunningState.Running) _dockerHost.Start();
 
             return;
         }
 
-        if (hosts.Count > 0) DockerHost = hosts.First();
+        if (hosts.Count > 0) _dockerHost = hosts.First();
 
-        if (null != DockerHost) return;
+        if (null != _dockerHost) return;
 
         EnsureDockerHost();
     }

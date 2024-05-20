@@ -23,20 +23,4 @@ public class TestFixture : DockerComposeTestBase
         ServiceProvider = serviceCollection.BuildServiceProvider();
         SampleData.Initialize(ServiceProvider);
     }
-
-    protected override ICompositeService Build()
-    {
-        var file = Path.Combine(Directory.GetCurrentDirectory(),
-            (TemplateString)"IntegrationTests/docker-compose.yaml");
-
-        return new DockerComposeCompositeService(
-            DockerHost,
-            new DockerComposeConfig
-            {
-                ComposeFilePath = new List<string> { file },
-                ForceRecreate = true,
-                RemoveOrphans = true,
-                StopOnDispose = true
-            });
-    }
 }
